@@ -1,4 +1,4 @@
-package com.smaliarov.prodyna;
+package com.smaliarov.prodyna.person;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
