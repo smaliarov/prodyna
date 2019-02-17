@@ -34,6 +34,7 @@ public class PersonServiceTest extends AbstractTestNGSpringContextTests {
     private final String personId = UUID.randomUUID().toString();
     private final String name = "Sergii";
     private final String shortName = "SM";
+    private final String longName = "Sergii Georgiiovich Maliarov";
     private final String updatedName = "Maliarov";
 
     public PersonServiceTest() {
@@ -62,6 +63,16 @@ public class PersonServiceTest extends AbstractTestNGSpringContextTests {
         PersonInput input = new PersonInput();
         input.setId(personId);
         input.setName(shortName);
+
+        ResponseEntity<Object> entity = this.restTemplate.postForEntity(getUrl(), input, Object.class);
+        assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test(groups = "create", dependsOnGroups = "init")
+    public void createTooLongName() {
+        PersonInput input = new PersonInput();
+        input.setId(personId);
+        input.setName(longName);
 
         ResponseEntity<Object> entity = this.restTemplate.postForEntity(getUrl(), input, Object.class);
         assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -124,6 +135,16 @@ public class PersonServiceTest extends AbstractTestNGSpringContextTests {
     public void updateNameTooShort() throws URISyntaxException {
         PersonPatchInput input = new PersonPatchInput();
         input.setName(shortName);
+
+        ResponseEntity<Object> entity = this.restTemplate.exchange(
+                new RequestEntity<>(input, HttpMethod.PATCH, new URI(getUrl(personId))), Object.class);
+        assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test(groups = "update", dependsOnGroups = "afterCreate")
+    public void updateNameTooLong() throws URISyntaxException {
+        PersonPatchInput input = new PersonPatchInput();
+        input.setName(longName);
 
         ResponseEntity<Object> entity = this.restTemplate.exchange(
                 new RequestEntity<>(input, HttpMethod.PATCH, new URI(getUrl(personId))), Object.class);
